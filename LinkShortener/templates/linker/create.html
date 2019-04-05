@@ -9,5 +9,6 @@
 		{% csrf_token %}
 		{{ form.as_p }}
 		<input id="" type="submit" value="Create"/>
+		{{ error }}
 	</form>
 {% endblock %}
