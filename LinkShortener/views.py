@@ -7,16 +7,16 @@ from django.http import HttpResponseRedirect
 import validators
 from django.core.validators import URLValidator
 from .generator import generate_short_link, format_link
+from .session import request_checker
 from django.http import Http404
 import datetime
 
-MAX_NUM = 3
-
+#templates
 link_create = 'linker/create.html'
 link_created = 'linker/created.html'
 link_created_fail = 'linker/created_fail.html'
 
-
+#homepage
 class CreateLink(View):
 	def get(self, request):
 		form = LinkForm()
@@ -25,44 +25,33 @@ class CreateLink(View):
 			'error': '',
 		})
 	def post(self, request):
+		error = ''
 		form = LinkForm(request.POST)
 		if form.is_valid():
 			linkb = form.cleaned_data['link']
 
+			#validate a link
 			linkb = format_link(linkb)
 			validator = URLValidator()
 			try:
 				validator(linkb)
 			except:
-				print(linkb)
+				error = 'incorrect link!'
+
+			#check maximum amount of shorten links produced in a row
+			error = request_checker(request, error)
+
+			#not ok
+			if error != '':
 				return render(request, link_create, context={
 					'form': form,
-					'error': 'incorrect link!',
+					'error': error,
 				})
 
+			#ok, save to db
 			name = form.cleaned_data['name']
 			links = generate_short_link(linkb, name)
-			print(links)
 			model = LinkModel(linkb=linkb, links=links)
-
-			if not request.session.get('used'):
-				request.session['used'] = 0
-
-			if request.session.get('used')>MAX_NUM:
-				time = datetime.datetime.now().strftime("%H")
-				if int(request.session.get('time')) - int(time) >0:
-					request.sesson['used'] = 0
-				else:
-					return render(request, link_create, context={
-						'form': form,
-						'error': 'wait a bit!',
-					})
-
-			request.session['used'] = request.session['used']+1
-			request.session['time'] = datetime.datetime.now().strftime("%H")
-			request.session['success'] = True
-			request.session.modified = True
-
 			model.save()
 
 			return redirect(reverse('success', args=(links,)))
@@ -72,11 +61,13 @@ class CreateLink(View):
 			'error': '',
 		})
 
+#redirect by shorten link
 class RedirectAdress(View):
 	def get(self, request, link):
 		group = get_object_or_404(LinkModel, links=link)
 		return redirect(group.linkb)
 
+#only successful can get here
 class SuccessRedirect(View):
 	def get(self, request, link):
 		print(request.session.get('success'))
@@ -89,6 +80,7 @@ class SuccessRedirect(View):
 		else:
 			raise Http404
 
+#only unsuccessful can get here
 class FailRedirect(View):
 	def get(self, request, link):
 		print(request.session.get('fail'))
