@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	Create short link
+{% endblock %}
+
+{% block content %}
+	<form action="." method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<input id="" type="submit" value="Create"/>
+	</form>
+{% endblock %}
