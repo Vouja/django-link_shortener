@@ -5,6 +5,15 @@
 {% endblock %}
 
 {% block content %}
-	Created!
-	<p>{{ link }}</p>
+	<p>Created!</p>
+	<input type="text" value="{{ link }}" id="linkInput" class="input" readonly="readonly">
+	<button onclick="copyFunction()" class="button">Copy link :3</button>
+
+	<script>
+	   function copyFunction() {
+		  var copyText = document.getElementById("linkInput");
+		  copyText.select();
+		  document.execCommand("copy");
+	  }
+	</script>
 {% endblock %}

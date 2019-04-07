@@ -7,8 +7,14 @@
 {% block content %}
 	<form action="." method="post">
 		{% csrf_token %}
-		{{ form.as_p }}
-		<input id="" type="submit" value="Create"/>
+		<p style="margin-bottom: -7px;">Original link</p>
+		{{ form.link }}
+		<br>
+		<p style="margin-bottom: -7px; margin-top: 10x;">Preferred name</p>
+		{{ form.name }}
+		<br>
+		<input id="" class="button" type="submit" value="Create"/>
+		<br>
 		{{ error }}
 	</form>
 {% endblock %}

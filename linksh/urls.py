@@ -18,9 +18,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.contrib.staticfiles.urls import static
 from django.views.generic import TemplateView
+from django.conf.urls import handler404, handler500
+from LinkShortener import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 	path('', include('LinkShortener.urls'), name='homepage'),
 	#path('', TemplateView.as_view(template_name='mainpage.html')),
 ]
+
+# handler404 = views.error_404

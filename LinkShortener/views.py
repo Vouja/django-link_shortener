@@ -10,11 +10,14 @@ from .generator import generate_short_link, format_link
 from .session import request_checker
 from django.http import Http404
 import datetime
+from django.contrib.sites.models import Site
 
 #templates
 link_create = 'linker/create.html'
 link_created = 'linker/created.html'
 link_created_fail = 'linker/created_fail.html'
+
+link_error_404 = 'erros/error_404.html'
 
 #homepage
 class CreateLink(View):
@@ -74,8 +77,9 @@ class SuccessRedirect(View):
 		if request.session.get('success'):
 			request.session['success'] = False
 			request.session.modified = True
-			return render(request, 'linker/created.html', context={
-				'link': link,
+			current_site = Site.objects.get_current()
+			return render(request, link_created, context={
+				'link': current_site.domain+'/'+link,
 			})
 		else:
 			raise Http404
@@ -87,8 +91,11 @@ class FailRedirect(View):
 		if request.session.get('fail'):
 			request.session['fail'] = False
 			request.session.modified = True
-			return render(request, 'linker/created_fail.html', context={
+			return render(request, link_created_fail, context={
 				'link': link,
 			})
 		else:
 			raise Http404
+
+# def error_404(request, exception):
+# 	return render(request, link_error_404)

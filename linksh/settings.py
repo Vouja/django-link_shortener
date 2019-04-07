@@ -26,6 +26,9 @@ SECRET_KEY = 'lcb%ecu*0nvj67oy4ku_wfns9w%=7xirq4v63l7_!fe!l6ygd@'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+# DEBUG = False
+#
+# ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -37,8 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'django.contrib.sites',
 	'LinkShortener',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -129,4 +135,4 @@ STATICFILES_DIRS = [
 
 
 SESSION_SAVE_EVERY_REQUEST = True
-SESSION_COOKIE_AGE = 160*60
+SESSION_COOKIE_AGE = 60*60
